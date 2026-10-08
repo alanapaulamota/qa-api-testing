@@ -1,0 +1,515 @@
+{
+  "info": {
+    "_postman_id": "d0c890d8-cf62-4480-a6b4-7fc3fb554e86",
+    "name": "QA API Testing - Restful Booker",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "10723531"
+  },
+  "item": [
+    {
+      "name": "01 - Authentication",
+      "item": [
+        {
+          "name": "AUTH-001 - Create Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Response contains authentication token\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response).to.have.property(\"token\");\n    pm.expect(response.token).to.be.a(\"string\");\n    pm.expect(response.token).to.not.be.empty;\n});\n\nconst response = pm.response.json();\n\nif (response.token) {\n    pm.environment.set(\"token\", response.token);\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Booking - List",
+      "item": [
+        {
+          "name": "BOOK-LIST-001 - List Bookings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Response is an array\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response).to.be.an(\"array\");\n});\n\npm.test(\"Each booking contains a bookingid\", function () {\n    const response = pm.response.json();\n\n    response.forEach(function (booking) {\n        pm.expect(booking).to.have.property(\"bookingid\");\n        pm.expect(booking.bookingid).to.be.a(\"number\");\n    });\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/booking/1551",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "1551"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Booking - Get",
+      "item": [
+        {
+          "name": "BOOK-GET-001 - Get Booking by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Booking contains required fields\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response).to.have.property(\"firstname\");\n    pm.expect(response).to.have.property(\"lastname\");\n    pm.expect(response).to.have.property(\"totalprice\");\n    pm.expect(response).to.have.property(\"depositpaid\");\n    pm.expect(response).to.have.property(\"bookingdates\");\n});\n\npm.test(\"Booking dates contain checkin and checkout\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.bookingdates).to.have.property(\"checkin\");\n    pm.expect(response.bookingdates).to.have.property(\"checkout\");\n});\n\npm.test(\"Booking data types are correct\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.firstname).to.be.a(\"string\");\n    pm.expect(response.lastname).to.be.a(\"string\");\n    pm.expect(response.totalprice).to.be.a(\"number\");\n    pm.expect(response.depositpaid).to.be.a(\"boolean\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Booking - Create",
+      "item": [
+        {
+          "name": "BOOK-CREATE-001 - Create Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Response contains booking ID\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response).to.have.property(\"bookingid\");\n    pm.expect(response.bookingid).to.be.a(\"number\");\n});\n\npm.test(\"Response contains booking details\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response).to.have.property(\"booking\");\n    pm.expect(response.booking).to.have.property(\"firstname\");\n    pm.expect(response.booking).to.have.property(\"lastname\");\n    pm.expect(response.booking).to.have.property(\"totalprice\");\n    pm.expect(response.booking).to.have.property(\"depositpaid\");\n    pm.expect(response.booking).to.have.property(\"bookingdates\");\n});\n\npm.test(\"Created booking has expected data\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.booking.firstname).to.eql(\"Alana\");\n    pm.expect(response.booking.lastname).to.eql(\"QA\");\n    pm.expect(response.booking.totalprice).to.eql(250);\n});\n\nconst response = pm.response.json();\n\nif (response.bookingid) {\n    pm.environment.set(\"bookingId\", response.bookingid);\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstname\": \"Alana\",\n    \"lastname\": \"QA\",\n    \"totalprice\": 250,\n    \"depositpaid\": true,\n    \"bookingdates\": {\n        \"checkin\": \"2026-10-10\",\n        \"checkout\": \"2026-10-15\"\n    },\n    \"additionalneeds\": \"Breakfast\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 - Booking - Update",
+      "item": [
+        {
+          "name": "BOOK-PUT-001 - Update Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Updated booking contains expected data\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.firstname).to.eql(\"Alana\");\n    pm.expect(response.lastname).to.eql(\"QA Updated\");\n    pm.expect(response.totalprice).to.eql(300);\n    pm.expect(response.depositpaid).to.eql(false);\n    pm.expect(response.additionalneeds).to.eql(\"Lunch\");\n});\n\npm.test(\"Updated booking dates are correct\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.bookingdates.checkin).to.eql(\"2026-10-12\");\n    pm.expect(response.bookingdates.checkout).to.eql(\"2026-10-18\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstname\": \"Alana\",\n    \"lastname\": \"QA Updated\",\n    \"totalprice\": 300,\n    \"depositpaid\": false,\n    \"bookingdates\": {\n        \"checkin\": \"2026-10-12\",\n        \"checkout\": \"2026-10-18\"\n    },\n    \"additionalneeds\": \"Lunch\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 - Booking - Partial Update",
+      "item": [
+        {
+          "name": "BOOK-PATCH-001 - Partial Update Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Only the requested field was updated\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.firstname).to.eql(\"Alana Updated\");\n    pm.expect(response.lastname).to.eql(\"QA Updated\");\n    pm.expect(response.totalprice).to.eql(300);\n    pm.expect(response.depositpaid).to.eql(false);\n    pm.expect(response.additionalneeds).to.eql(\"Lunch\");\n});\n\npm.test(\"Booking dates remain unchanged\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.bookingdates.checkin).to.eql(\"2026-10-12\");\n    pm.expect(response.bookingdates.checkout).to.eql(\"2026-10-18\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstname\": \"Alana Updated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 - Booking - Delete",
+      "item": [
+        {
+          "name": "BOOK-DELETE-001 - Delete Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 201\", function () {\n    pm.response.to.have.status(201);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "token={{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 - End-to-End",
+      "item": [
+        {
+          "name": "E2E-001 - Create Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Booking was created\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response).to.have.property(\"bookingid\");\n    pm.expect(response.bookingid).to.be.a(\"number\");\n    pm.expect(response).to.have.property(\"booking\");\n});\n\nconst response = pm.response.json();\n\nif (response.bookingid) {\n    pm.environment.set(\"bookingId\", response.bookingid);\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstname\": \"Alana\",\n    \"lastname\": \"E2E\",\n    \"totalprice\": 400,\n    \"depositpaid\": true,\n    \"bookingdates\": {\n        \"checkin\": \"2026-11-01\",\n        \"checkout\": \"2026-11-05\"\n    },\n    \"additionalneeds\": \"Breakfast\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E-002 - Get Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Booking belongs to the E2E flow\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.firstname).to.eql(\"Alana\");\n    pm.expect(response.lastname).to.eql(\"E2E\");\n    pm.expect(response.totalprice).to.eql(400);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E-003 - Update Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Booking was fully updated\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.firstname).to.eql(\"Alana\");\n    pm.expect(response.lastname).to.eql(\"E2E Updated\");\n    pm.expect(response.totalprice).to.eql(450);\n    pm.expect(response.depositpaid).to.eql(false);\n    pm.expect(response.additionalneeds).to.eql(\"Lunch\");\n});\n\npm.test(\"Booking dates were updated\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.bookingdates.checkin).to.eql(\"2026-11-02\");\n    pm.expect(response.bookingdates.checkout).to.eql(\"2026-11-06\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstname\": \"Alana\",\n    \"lastname\": \"E2E Updated\",\n    \"totalprice\": 450,\n    \"depositpaid\": false,\n    \"bookingdates\": {\n        \"checkin\": \"2026-11-02\",\n        \"checkout\": \"2026-11-06\"\n    },\n    \"additionalneeds\": \"Lunch\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E-004 - Partial Update Booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Response status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is JSON\", function () {\n    pm.response.to.be.json;\n});\n\npm.test(\"Partial update changed only the requested field\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.firstname).to.eql(\"Alana E2E Final\");\n    pm.expect(response.lastname).to.eql(\"E2E Updated\");\n    pm.expect(response.totalprice).to.eql(450);\n    pm.expect(response.depositpaid).to.eql(false);\n    pm.expect(response.additionalneeds).to.eql(\"Lunch\");\n});\n\npm.test(\"Booking dates remain unchanged\", function () {\n    const response = pm.response.json();\n\n    pm.expect(response.bookingdates.checkin).to.eql(\"2026-11-02\");\n    pm.expect(response.bookingdates.checkout).to.eql(\"2026-11-06\");\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "token={{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstname\": \"Alana E2E Final\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "E2E-005 - Delete Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "E2E-005 - Delete Booking",
+              "host": [
+                "E2E-005 - Delete Booking"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+# Sistema / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Arquivos locais com possíveis credenciais
+*.local
+*.secret
+*.secrets
+
+# Relatórios gerados localmente
+reports/*
+!reports/.gitkeep
